@@ -7,9 +7,11 @@ import { faBeer } from '@fortawesome/free-solid-svg-icons'
 import { faWineGlassAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGlassWhiskey } from '@fortawesome/free-solid-svg-icons'
 import { faGlassMartiniAlt } from '@fortawesome/free-solid-svg-icons'
-import { ReactIndexedDB } from 'react-indexed-db'
 
 import db from "./db"
+
+import PieChart from "./pieChart"
+
 
 console.log(db)
 // interface SplashProps { }
@@ -17,11 +19,11 @@ console.log(db)
 //   peoples: any[]
 // }
 class Splash extends React.Component {
-    // db = ReactIndexedDB;
-    // state = { drinks: [] }
+
     constructor(props) {
         super(props);
         this.state = { drinksToday: [] }
+        this.makeCharts()
     }
 
     addBeer = () => {
@@ -32,6 +34,7 @@ class Splash extends React.Component {
         }
         db.table("drinks").add(beer)
         this.countDrinks()
+        console.log(this.state)
     }
     addWine = () => {
         let timestamp = (moment().format('HHmmss'))
@@ -60,9 +63,37 @@ class Splash extends React.Component {
             });
     }
 
+    makeCharts = () => {
+        let chart = {
+            // chart: {
+            labels: ['Beer', 'Wine', 'Cocktails'],
+            datasets: [{
+                label: '# of Drinks',
+                data: [12, 19, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+
+                ],
+                borderWidth: 1
+            }]
+            // }
+        }
+        this.setState((state, props) => { return { chartData: chart } })
+        console.log("xxx", this.state.chartData)
+    }
+
 
     componentDidMount() {
         this.countDrinks()
+        this.makeCharts()
     }
 
     render() {
@@ -84,11 +115,12 @@ class Splash extends React.Component {
                         today I've had: {this.state.drinksToday.length} drinks
                         <ol>
                             {this.state.drinksToday.map((v, i) => {
-                                return [<li>{v.name} {v.time}</li>]
+                                return [<li key={i}>{v.name} {v.time}</li>]
                             }
                             )}
                         </ol>
                     </Col>
+                    <PieChart chartData={this.state.chartData} />
                 </Row>
             </Container >
         )

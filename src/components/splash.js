@@ -11,6 +11,7 @@ import { ReactIndexedDB } from 'react-indexed-db'
 
 import db from "./db"
 
+console.log(db)
 // interface SplashProps { }
 // interface AppState {
 //   peoples: any[]
@@ -20,84 +21,48 @@ class Splash extends React.Component {
     // state = { drinks: [] }
     constructor(props) {
         super(props);
-        this.state = { drinkstoday: 0 }
-        this.db = new ReactIndexedDB('myDB', 1);
-        this.db.openDatabase(1, (evt) => {
-            const request = evt.currentTarget;
-            let objectStore = request.result.createObjectStore('drinks', { keyPath: 'id', autoIncrement: true });
-            objectStore.createIndex('id', 'id', { unique: true });
-            objectStore.createIndex('name', 'name', { unique: false });
-            objectStore.createIndex('time', 'time', { unique: false });
-            objectStore.createIndex('class', 'class', { unique: false });
-            objectStore.createIndex('date', 'date', { unique: false });
-        }).then(() => {
-            // this.getAll();
-        });
+        this.state = { drinksToday: [] }
     }
 
-    // idb = function () {
-
-
-    //     //check for support
-    //     if (!('indexedDB' in window)) {
-    //         console.log('This browser doesn\'t support IndexedDB');
-    //         return;
-    //     }
-
-    // var dbPromise = indexedDB.open('drinksies', 1);
-    // dbPromise.onerror = function (event) {
-    //     console.log(event)
-    //     // This is done for handling errors. 
-    // };
-    // dbPromise.onupgradeneeded = function (event) {
-    //     var db = event.target.result;
-    //     // let time = moment()
-    //     var objectStore = db.createObjectStore("drinks", { keyPath: "time" });
-    //     var addBeer = function () {
-    //         objectStore.add({ drink: "beer", time: moment() })
-    //     }
-
-
-    // }
     addBeer = () => {
-        let timestamp = moment().format('hhmmss')
+        let timestamp = moment().format('HHmmss')
         let datestamp = moment().format("YYMMDD")
-        this.db.add("drinks", { name: "beer", date: datestamp, time: timestamp, class: "beer" }).then(err => err ? this.countDrinks() : console.log(err))
-
+        let beer = {
+            name: "beer", date: datestamp, time: timestamp, class: "beer"
+        }
+        db.table("drinks").add(beer)
+        this.countDrinks()
     }
     addWine = () => {
-        let timestamp = (moment().format('hhmmss'))
+        let timestamp = (moment().format('HHmmss'))
         let datestamp = moment().format("YYMMDD")
-
-        this.db.add("drinks", { name: "wine", date: datestamp, time: timestamp, class: "wine" }).then(err => err ? alert("you done drank a wine") : console.log(err))
+        let wine = {
+            name: "wine", date: datestamp, time: timestamp, class: "wine"
+        }
+        db.table("drinks").add(wine)
+        this.countDrinks()
     }
     addCocktail = () => {
-        let timestamp = (moment().format('hhmmss'))
+        let timestamp = (moment().format('HHmmss'))
         let datestamp = moment().format("YYMMDD")
-
-        this.db.add("drinks", { name: "cocktail", date: datestamp, time: timestamp, class: "cocktail" }).then(err => err ? alert("you done drank a liquer") : console.log(err))
+        let cocktail = {
+            name: "cocktail", date: datestamp, time: timestamp, class: "cocktail"
+        }
+        db.table("drinks").add(cocktail)
+        this.countDrinks()
     }
     countDrinks = () => {
         let today = moment().format("YYMMDD")
-        let arr = this.db.getAll('drinks', IDBKeyRange.upperBound(today - 1), "date")
-            .then((res, err) => console.log(res)).then(drink => console.log(drink))
-        console.log("in here", arr)
-        this.setState({ drinkstoday: arr.length })
-        console.log(this.state.drinkstoday)
+        db.table('drinks').where("date").startsWith(today)
+            .toArray()
+            .then((drinks) => {
+                this.setState({ drinksToday: drinks });
+            });
     }
 
 
     componentDidMount() {
-        this.db.openDatabase(1, (evt) => {
-            const request = evt.currentTarget;
-            let objectStore = request.result.createObjectStore('drinks', { keyPath: 'id', autoIncrement: true });
-            objectStore.createIndex('id', 'id', { unique: true });
-            objectStore.createIndex('name', 'name', { unique: false });
-            objectStore.createIndex('time', 'time', { unique: false });
-            objectStore.createIndex('class', 'class', { unique: false });
-        }).then(() => {
-            this.db.getAll().then(drink => console.log(drink));
-        });
+        this.countDrinks()
     }
 
     render() {
@@ -116,8 +81,14 @@ class Splash extends React.Component {
                         <Row><Button outline className="spaced" color="secondary" size="lg" onClick={this.addCocktail}><FontAwesomeIcon icon={faGlassMartiniAlt} />Double</Button></Row>
                     </Col>
                     <Col sm="6" md="8">
-                        today I've had: {this.state.drinkstoday} drinks
-        </Col>
+                        today I've had: {this.state.drinksToday.length} drinks
+                        <ol>
+                            {this.state.drinksToday.map((v, i) => {
+                                return [<li>{v.name} {v.time}</li>]
+                            }
+                            )}
+                        </ol>
+                    </Col>
                 </Row>
             </Container >
         )

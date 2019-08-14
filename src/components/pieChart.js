@@ -33,7 +33,8 @@ class Chart extends React.Component {
     render() {
         console.log(this.state, this.props)
         return (
-            <div><Bar data={this.state.chart} /></div>
+            <div><Bar data={this.props.chart} /></div>
+            // <div><Bar data={this.state.chart} /></div>
         )
     }
 }

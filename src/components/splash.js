@@ -23,7 +23,7 @@ class Splash extends React.Component {
     constructor(props) {
         super(props);
         this.state = { drinksToday: [] }
-        this.makeCharts()
+        // this.makeCharts()
     }
 
     addBeer = () => {
@@ -61,6 +61,30 @@ class Splash extends React.Component {
             .then((drinks) => {
                 this.setState({ drinksToday: drinks });
             });
+        //TODO: compound query syntax
+        db.table('drinks').where("date").startsWith(today)
+            .and(function (x) { return x.class == "beer" })
+            .toArray().then(drinks => this.setState({ beersToday: drinks.length }))
+        //     .where("class").startsWith("beer")
+        //     .toArray()
+        //     .then((drinks) => {
+        //         this.setState({ beersToday: drinks.length });
+        //     });
+        db.table('drinks').where("date").startsWith(today)
+            .and(function (x) { return x.class == "wine" })
+            .toArray().then(drinks => this.setState({ winesToday: drinks.length }))
+        //     .toArray()
+        //     .then((drinks) => {
+        //         this.setState({ wineToday: drinks.length });
+        //     });
+        db.table('drinks').where("date").startsWith(today)
+            .and(function (x) { return x.class == "cocktail" })
+            .toArray().then(drinks => this.setState({ cocktailsToday: drinks.length }))
+        //     .toArray()
+        //     .then((drinks) => {
+        //         this.setState({ cocktailsToday: drinks.length });
+        //     });
+
     }
 
     makeCharts = () => {
@@ -87,7 +111,7 @@ class Splash extends React.Component {
             // }
         }
         this.setState((state, props) => { return { chartData: chart } })
-        console.log("xxx", this.state.chartData)
+        console.log("xxx", this.state.chartData)//this is a suggestion, not a force for chartData
     }
 
 

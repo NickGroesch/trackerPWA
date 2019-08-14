@@ -1,5 +1,5 @@
 import React from 'react';
-import { Jumbotron, Container, Row, Col } from 'reactstrap'
+import { Jumbotron, Container, } from 'reactstrap'
 import './App.css';
 import Splash from "./components/splash"
 

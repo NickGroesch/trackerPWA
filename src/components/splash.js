@@ -34,6 +34,8 @@ class Splash extends React.Component {
         }
         db.table("drinks").add(beer)
         this.countDrinks()
+        this.makeCharts()
+
         console.log(this.state)
     }
     addWine = () => {
@@ -44,6 +46,7 @@ class Splash extends React.Component {
         }
         db.table("drinks").add(wine)
         this.countDrinks()
+        this.makeCharts()
     }
     addCocktail = () => {
         let timestamp = (moment().format('HHmmss'))
@@ -53,6 +56,8 @@ class Splash extends React.Component {
         }
         db.table("drinks").add(cocktail)
         this.countDrinks()
+        this.makeCharts()
+
     }
     countDrinks = () => {
         let today = moment().format("YYMMDD")
@@ -61,29 +66,18 @@ class Splash extends React.Component {
             .then((drinks) => {
                 this.setState({ drinksToday: drinks });
             });
-        //TODO: compound query syntax
         db.table('drinks').where("date").startsWith(today)
             .and(function (x) { return x.class == "beer" })
             .toArray().then(drinks => this.setState({ beersToday: drinks.length }))
-        //     .where("class").startsWith("beer")
-        //     .toArray()
-        //     .then((drinks) => {
-        //         this.setState({ beersToday: drinks.length });
-        //     });
+
         db.table('drinks').where("date").startsWith(today)
             .and(function (x) { return x.class == "wine" })
             .toArray().then(drinks => this.setState({ winesToday: drinks.length }))
-        //     .toArray()
-        //     .then((drinks) => {
-        //         this.setState({ wineToday: drinks.length });
-        //     });
+
         db.table('drinks').where("date").startsWith(today)
             .and(function (x) { return x.class == "cocktail" })
             .toArray().then(drinks => this.setState({ cocktailsToday: drinks.length }))
-        //     .toArray()
-        //     .then((drinks) => {
-        //         this.setState({ cocktailsToday: drinks.length });
-        //     });
+
 
     }
 
@@ -93,7 +87,7 @@ class Splash extends React.Component {
             labels: ['Beer', 'Wine', 'Cocktails'],
             datasets: [{
                 label: '# of Drinks',
-                data: [12, 19, 3],
+                data: [this.state.beersToday, this.state.winesToday, this.state.cocktailsToday],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',

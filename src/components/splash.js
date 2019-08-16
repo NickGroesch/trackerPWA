@@ -54,9 +54,13 @@ class Splash extends React.Component {
         let cocktail = {
             name: "cocktail", date: datestamp, time: timestamp, class: "cocktail"
         }
-        db.table("drinks").add(cocktail)
-        this.countDrinks()
-        this.makeCharts()
+        db.table("drinks").add(cocktail).then(() => {
+            // this.countDrinks().then(() => {
+
+            //     this.makeCharts()
+            // });
+        })
+
 
     }
     countDrinks = () => {
@@ -104,7 +108,7 @@ class Splash extends React.Component {
             }]
             // }
         }
-        this.setState((state, props) => { return { chartData: chart } })
+        this.setState((state) => { return { chartData: chart } })
         console.log("xxx", this.state.chartData)//this is a suggestion, not a force for chartData
     }
 
@@ -113,6 +117,7 @@ class Splash extends React.Component {
         this.countDrinks()
         this.makeCharts()
     }
+
 
     render() {
 
@@ -144,6 +149,10 @@ class Splash extends React.Component {
         )
     }
 }
+// ReactDOM.render(
+//     <Splash />,
+//     document.getElementById('root')
+// )
 
 export default Splash
 
